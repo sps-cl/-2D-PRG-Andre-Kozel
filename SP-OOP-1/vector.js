@@ -1,27 +1,47 @@
-class Vector {
-    constructor(x,y) {
-        this.x=x;
-        this.y=y;
+class Player extends GameObject{
+    constructor (position,size){
+     super(position)
+     this.standingSprite = new Sprite("player_standing", position, size, size)
+     this.crouchingSprite = new Sprite ("player_crouching", position, size * 1.1, size * 0.75)
+     this.sprite = this.standingSprite
+     this.standingCollider = new CircleCollider (position, size / 2)
+     this.crouchingCollider = new RectCollider (position, size * 1.1, size * 0.75)
+     this.collider = this.standingCollider
+     this.crouching = false
+     this.grounded = false
+    }
+    jump(){
+        if (this.grounded){
+            this.speed.y = -14
+        }
+    }
+    
+    getUp(){
+        if (this.crouching){
+            this.collider = this.standingCollider
+            this.sprite = this.standingSprite
+            this.crouching = false
+        }
     }
 
-    addTo (other) {
-        this.x += other.x;
-        this.y+= other.y;
+    crouch(){
+       if (this.crouching === true){
+            return
+        }
+        this.crouching = true
+        this.collider = this.crouchingCollider
+        this.sprite = this.crouchingSprite
+        this.y += this.standingCollider.bottomEdge - this.crouchingCollider.bottomEdge
     }
 
-    sum(other) {
-        new Vector (this.x + other.x,this.y + other.y)
+    move (){
+        this.speed.y += 0.3
+        super.move ()
+        if (this.collider.bottomEdge >= this.maxBounds.y){
+            this.collider.bottomEdge = this.maxBounds.y
+            this.speed.y = 0
+            this.grounded = true
+        }
+        else this.grounded = false
     }
-
-    get squareSize() {
-        return this.x * this.x + this.y * this.y;
-    }
-    subtract(other) {
-        this.x -= other.x;
-        this.y -= other.y;  
-    }
-
-    difference(other) {
-        return new Vector (this.x - other.x,this.y - other.y)
-    }
-}   
+}
