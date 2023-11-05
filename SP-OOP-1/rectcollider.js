@@ -1,42 +1,47 @@
-class RectCollider extends Positionable{
-    constructor (position, width, height) {
-        super (position)
-        this.width=width;
-        this.height= height;
+class Player extends GameObject{
+    constructor (position,size){
+     super(position)
+     this.standingSprite = new Sprite("player_standing", position, size, size)
+     this.crouchingSprite = new Sprite ("player_crouching", position, size * 1.1, size * 0.75)
+     this.sprite = this.standingSprite
+     this.standingCollider = new CircleCollider (position, size / 2)
+     this.crouchingCollider = new RectCollider (position, size * 1.1, size * 0.75)
+     this.collider = this.standingCollider
+     this.crouching = false
+     this.grounded = false
     }
-    collideWith(other) {
-        return CollisionDetection.checkRectCollision(this, other)
-    }
-    collideWithCircle(other) {
-        return CollisionDetection.checkRectCircleCollision(this, other)
-    }
-    get leftEdge () {
-        return this.x;
-    } 
-
-    get rightEdge () {
-        return this.x + this.width;
-    } 
-    get topEdge () {
-        return this.y;
-    }
-    get bottomEdge () {
-        return this.y + this.height;
-    }  
-
-    set leftEdge(value) {
-        this.x =value;
-    }
-
-    set rightEdge(value) {
-        this.x= value - this.width
-    }
-
-    set topEdge(value) {
-        this.y = value
+    jump(){
+        if (this.grounded){
+            this.speed.y = -14
+        }
     }
     
-    set bottomEdge(value) {
-        this.y = value - this.height
+    getUp(){
+        if (this.crouching){
+            this.collider = this.standingCollider
+            this.sprite = this.standingSprite
+            this.crouching = false
+        }
+    }
+
+    crouch(){
+       if (this.crouching === true){
+            return
+        }
+        this.crouching = true
+        this.collider = this.crouchingCollider
+        this.sprite = this.crouchingSprite
+        this.y += this.standingCollider.bottomEdge - this.crouchingCollider.bottomEdge
+    }
+
+    move (){
+        this.speed.y += 0.3
+        super.move ()
+        if (this.collider.bottomEdge >= this.maxBounds.y){
+            this.collider.bottomEdge = this.maxBounds.y
+            this.speed.y = 0
+            this.grounded = true
+        }
+        else this.grounded = false
     }
 }
