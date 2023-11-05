@@ -1,5 +1,5 @@
 class CircleCollider extends Positionable{
-    constructor (position, radius){
+    constructor (position, radius) {
         super(position)
         this.radius= radius
     }
