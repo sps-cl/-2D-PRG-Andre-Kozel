@@ -8,10 +8,9 @@ class Scene {
         document.body.appendChild (canvas)
         this.context = canvas.getContext("2d")
     }
-    draw(...drawables) { 
+    draw(...drawables){
         for (let i = 0; i < drawables.length; i++) {
             drawables[i].draw(this.context)
         }
     }
-    
 }
